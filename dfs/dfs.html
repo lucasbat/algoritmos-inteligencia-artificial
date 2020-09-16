@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inteligência Artificial</title>
+
+  <style>
+    .container {
+      width: 92%;
+      max-width: 940px;
+      margin: auto;
+    }
+
+    body {
+      text-align: center;
+    }
+
+    img {
+      width: 100%;
+      max-width: 400px;
+    }
+
+    section {
+      border: 2px solid #ccc;
+      border-radius: 4px;
+      padding: 0 20px;
+      text-align: left;
+      margin-top: 10px;
+    }
+
+    @media (min-width: 540px) {
+      #result {
+        display: flex;
+      }
+
+      section {
+        width: 100%;
+        margin: 5px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <h1>Inteligência Artificial</h1>
+
+    <img src="./grafo.png" alt="Grafo">
+    
+    <div id="result"></div>
+  </main>
+
+  <script>
+    class Graph {
+      constructor(dictionary, start, end) {
+        this.adjacent = []
+        this.path = []
+        this.vertices = 0
+
+        this.init(dictionary)
+        this.dfs(start, end)
+      }
+
+      init(dictionary) {
+        const max = array => Math.max.apply(null, array)
+
+        this.vertices = max(dictionary.map(array => max(array)))
+
+        for(let a = 0; a <= this.vertices; a++) 
+          this.adjacent[a] = []
+
+        dictionary.forEach(([a, b]) => {
+          this.adjacent[a].push(b)
+          this.adjacent[b].push(a)
+        })
+      }
+
+      dfs(start, end) {
+        if(this.adjacent[end] === undefined || this.adjacent[end].length === 0)
+          return this.render(true)
+
+        if(start > end) 
+          [ start, end ] = [ end, start ]
+
+        while(true) {
+          const current = this.adjacent[start]
+
+          this.path.push(current)
+
+          if(current.includes(end))
+            break
+
+          const next = this.adjacent.find(array => array.includes(start) && !this.path.includes(array)) 
+
+          start = this.adjacent.indexOf(next)
+        }
+
+        this.path.push(this.adjacent[end])
+        
+        this.render()
+      }
+
+      render(not) {
+        const result = document.getElementById('result')
+        const adjacent = document.createElement('section')
+        const path = document.createElement('section')
+
+        if(not) {
+          path.innerHTML = 'Não existe caminho'
+
+          return result.appendChild(path)
+        }
+
+        this.adjacent.forEach((array, index) => {
+          const p = document.createElement('p')
+
+          p.innerHTML = `O vértice <strong>${index}</strong> é adjacente a:&ensp;`
+
+          array.forEach(vertice => p.innerHTML += vertice + ', ')
+
+          p.innerHTML = p.innerHTML.substr(1, (p.innerHTML.length - 3))
+ 
+          adjacent.appendChild(p)
+        })
+
+        result.appendChild(adjacent)
+
+        this.path.forEach(vertice => {
+          const p = document.createElement('p')
+
+          p.innerHTML += `Vértice <strong>${this.adjacent.indexOf(vertice)}</strong> visitado`
+
+          path.appendChild(p)
+        })
+
+        result.appendChild(path)
+      }
+    }
+
+    /*const dictionary = [
+      [0, 1],
+      [0, 2],
+      [1, 3],
+      [1, 4],
+      [2, 5],
+      [2, 6],
+      [6, 7]
+    ]*/
+
+    const dictionary = [
+      [1, 2],
+      [1, 4],
+      [2, 3],
+      [2, 5],
+      [2, 7],
+      [3, 4],
+      [3, 5],
+      [3, 6],
+      [4, 5],
+      [4, 7],
+      [5, 6],
+      [6, 7]
+    ]
+
+    new Graph(dictionary, 7, 1)
+  </script>
+</body>
+</html>
